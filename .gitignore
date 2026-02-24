@@ -2,3 +2,4 @@
 *.pid
 *.sock
 *.pyc
+staticfiles/*
