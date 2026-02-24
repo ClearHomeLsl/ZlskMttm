@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>外汇交易实时报价</title>
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="top-header">
+        <div class="header-left">
+            <img src="/static/logo.png" alt="Logo" class="company-logo">
+            <span class="company-name">智链金眼</span>
+        </div>
+
+        <!-- 菜单栏（可屏蔽） -->
+{#        <nav class="header-menu">#}
+{#            <a href="#">首页</a>#}
+{#            <a href="#">行情</a>#}
+{#            <a href="#">策略</a>#}
+{#            <a href="#">帮助</a>#}
+{#        </nav>#}
+
+        <div class="header-right" id="userSection">
+            <!-- 未登录 -->
+            <a href="javascript:void(0)" class="auth-btn" onclick="showLogin()">登录</a>
+            <a href="javascript:void(0)" class="auth-btn" onclick="showRegister()">注册</a>
+
+            <!-- 已登录（示例） -->
+            <!--
+            <div class="user-info">
+                <span class="username">Hi, John</span>
+                <span class="logout">退出</span>
+            </div>
+            -->
+        </div>
+    </header>
+<!--    内容-->
+    <div class="container">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="currency-pair">XAU/USD</div>
+                <div class="price-info">
+                    <div class="price up" id="currentPrice">1.0875</div>
+                    <div class="price-change up" id="priceChange">+0.0024 (+0.22%)</div>
+                </div>
+            </div>
+
+            <div class="timeframe-selector">
+                <button class="timeframe-btn active"  data-tf="m1">1分钟</button>
+                <button class="timeframe-btn" data-tf="m5">5分钟</button>
+                <button class="timeframe-btn" data-tf="m15">15分钟</button>
+                <button class="timeframe-btn" data-tf="m30">30分钟</button>
+                <button class="timeframe-btn" data-tf="h1">1小时</button>
+            </div>
+            <div id="ohlc-info" style="color:#e6e6e6;margin:10px 0;font-size:14px;">
+                OHLC: --
+            </div>
+
+            <div class="chart-wrapper" id="price_chart">
+            </div>
+        </div>
+
+        <div class="notifications-container">
+            <div class="notifications-header">趋势变动(M1)</div>
+            <div class="notifications-list" id="notificationsList">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        <p>免责声明：本页面显示的外汇报价和数据仅供参考，不构成任何投资建议。外汇交易存在高风险，可能导致资金损失。请在充分了解相关风险后，根据自身的投资经验和财务状况谨慎决策。</p>
+    </div>
+
+
+</body>
+<script src="{% static 'js/chart-update.js' %}"></script>
+</html>

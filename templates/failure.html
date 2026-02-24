@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>充值失败</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2c1e3e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .result-card {
+            background: rgba(40, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(232, 69, 69, 0.2);
+        }
+
+        .failure-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: linear-gradient(135deg, #e84545, #c0392b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        .failure-icon i {
+            font-size: 36px;
+            color: white;
+        }
+
+        h1 {
+            color: #e84545;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            color: #b8b8b8;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .error-info {
+            background: rgba(60, 30, 45, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #8f8f8f;
+            font-size: 14px;
+        }
+
+        .value {
+            color: #e6e6e6;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .error-msg {
+            color: #e84545;
+            font-weight: bold;
+        }
+
+        .suggestion {
+            background: rgba(232, 69, 69, 0.1);
+            border-left: 3px solid #e84545;
+            padding: 12px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+            font-size: 14px;
+            color: #b8b8b8;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 140px;
+        }
+
+        .btn-retry {
+            background: linear-gradient(135deg, #e84545, #c0392b);
+            color: white;
+        }
+
+        .btn-home {
+            background: transparent;
+            color: #4ecca3;
+            border: 2px solid #4ecca3;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            animation: fadeIn 0.8s ease-out;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="result-card">
+        <div class="failure-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+
+        <h1>充值失败</h1>
+        <p class="message">
+            支付过程中遇到了问题<br>
+            您的资金是安全的，请重试或联系客服
+        </p>
+
+        <div class="error-info">
+            <div class="info-row">
+                <span class="label">订单编号：</span>
+                <span class="value">{{ error.order_no }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">错误信息：</span>
+                <span class="value error-msg">{{ error.error_msg }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">充值金额：</span>
+                <span class="value">¥ {{ error.amount }}</span>
+            </div>
+        </div>
+
+        <div class="suggestion">
+            <i class="fas fa-lightbulb"></i>
+            建议：请检查支付账户余额或稍后重试
+        </div>
+
+        <div class="btn-group">
+{#            <button onclick="window.location.href='/recharge/'" class="btn btn-retry">#}
+{#                <i class="fas fa-redo"></i> 重新充值#}
+{#            </button>#}
+            <button onclick="window.location.href='/'" class="btn btn-home">
+                <i class="fas fa-home"></i> 返回首页
+            </button>
+        </div>
+
+        <div style="margin-top: 25px; font-size: 12px; color: #666;">
+            <p>客服电话：400-123-4567</p>
+        </div>
+    </div>
+
+    <script>
+        // 自动重试（可选）
+        let autoRetryCount = 0;
+        const maxAutoRetry = 2;
+
+        function autoRetry() {
+            if (autoRetryCount < maxAutoRetry) {
+                autoRetryCount++;
+                console.log(`自动重试第 ${autoRetryCount} 次`);
+                // 可以在这里添加重试逻辑
+            }
+        }
+
+        // 5秒后自动重试一次
+        setTimeout(autoRetry, 5000);
+
+        // 错误信息提示
+        const errorMsg = '{{ error.error_msg }}';
+        if (errorMsg.includes('余额') || errorMsg.includes('不足')) {
+            console.log('检测到余额不足错误');
+        }
+    </script>
+</body>
+</html>

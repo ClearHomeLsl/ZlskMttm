@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>充值成功</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .result-card {
+            background: rgba(30, 30, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(78, 204, 163, 0.2);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: linear-gradient(135deg, #4ecca3, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .success-icon i {
+            font-size: 36px;
+            color: white;
+        }
+
+        h1 {
+            color: #4ecca3;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            color: #b8b8b8;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .order-info {
+            background: rgba(40, 40, 60, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #8f8f8f;
+            font-size: 14px;
+        }
+
+        .value {
+            color: #e6e6e6;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .amount {
+            color: #4ecca3;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .btn-home {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 40px;
+            background: linear-gradient(135deg, #4ecca3, #2ecc71);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(78, 204, 163, 0.4);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(78, 204, 163, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(78, 204, 163, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(78, 204, 163, 0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            animation: fadeIn 0.8s ease-out;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="result-card">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+
+        <h1>充值成功</h1>
+        <p class="message">
+            充值金额已到账，感谢您的支持！
+        </p>
+
+        <div class="order-info">
+            <div class="info-row">
+                <span class="label">订单编号：</span>
+                <span class="value">{{ order.order_no }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">支付宝交易号：</span>
+                <span class="value">{{ order.alipay_no }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">充值金额：</span>
+                <span class="value amount">¥ {{ order.amount }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">商品名称：</span>
+                <span class="value">{{ order.subject }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">支付时间：</span>
+                <span class="value">{{ order.pay_time }}</span>
+            </div>
+        </div>
+
+        <button onclick="window.location.href='/'" class="btn-home">
+            <i class="fas fa-home"></i> 返回首页
+        </button>
+
+        <div style="margin-top: 20px; font-size: 12px; color: #666;">
+            <p>如有问题，请联系客服</p>
+        </div>
+    </div>
+
+    <script>
+        // 自动跳转（可选）
+        setTimeout(() => {
+            console.log('支付成功，订单号：{{ order.order_no }}');
+        }, 1000);
+
+        // 复制订单号功能
+        function copyOrderNumber() {
+            const orderNo = '{{ order.order_no }}';
+            navigator.clipboard.writeText(orderNo).then(() => {
+                alert('订单号已复制');
+            });
+        }
+
+        // 双击订单号可以复制
+        document.querySelectorAll('.info-row')[0].addEventListener('dblclick', copyOrderNumber);
+    </script>
+</body>
+</html>
