@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.users',
     'apps.kline',
-    'apps.aliyun_pay'
+    'apps.aliyun_pay',
+    'apps.news'
 ]
 
 MIDDLEWARE = [
