@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from MttmView.settings import secure, httponly
 from utils.basic_function import get_random_code
 from utils.aliyun_sms import Sample
+from django.db.models import Q
 
 
 class UserLoginView(APIView):
@@ -36,9 +37,9 @@ class UserLoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
-        if not UserProfile.objects.filter(username=username).exists():
+        if not UserProfile.objects.filter(Q(username=username)|Q(mobile=username)).exists():
             return Response({"msg": "用户不存在！", "code": "1003", "response_type": "error"})
-        user = UserProfile.objects.get(username=username)
+        user = UserProfile.objects.get(Q(username=username)|Q(mobile=username))
         if not user.check_password(password):
             return Response({"msg": "密码错误", "code": "1001", "response_type": "error"})
         # 登陆成功
@@ -96,6 +97,8 @@ class UserRegisterView(APIView):
         sys_verify_code = r.get(user_verify_str)  # 失效时间300秒，也就是5分钟
         if str(sys_verify_code) != str(verify_code):
             return Response({"msg": "验证码错误！", "code": "1002", "response_type": "error"})
+        if UserProfile.objects.filter(Q(username=username)|Q(mobile=mobile)).exists():
+            return Response({"msg": "手机号或用户名已注册", "code": "1003", "response_type": "error"})
         # 获取用户注册IP
         ip_address = request.META.get('REMOTE_ADDR')
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')  # 如果使用代理，可能需要获取 X-Forwarded-For

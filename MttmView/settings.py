@@ -54,21 +54,27 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.kline',
     'apps.aliyun_pay',
-    'apps.news'
+    'apps.news',
+    'corsheaders',
 ]
 
+
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "utils.middleware.DisableCSRFMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+# CORS 配置，允许所有来源跨域（开发环境建议，生产环境请限制来源）
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True  # ✅ 添加这一行，允许携带 cookie
+# 如需允许携带 cookie，可加：CORS_ALLOW_CREDENTIALS = True
 ROOT_URLCONF = 'MttmView.urls'
 
 # 模板配置
