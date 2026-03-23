@@ -18,9 +18,29 @@ from django.contrib.auth.hashers import make_password, check_password
 #     def __str__(self):
 #         return self.id
 
+
+
+
+class Person(models.Model):
+    # 定义选项元组
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+    ]
+    
+    name = models.CharField(max_length=100)
+    gender = models.CharField(
+        max_length=1,
+        choices=GENDER_CHOICES,
+        default='M',
+        verbose_name='性别'
+    )
+
 class UserProfile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(verbose_name='用户名', max_length=16, unique=True, null=False, blank=False)
+    email = models.EmailField(verbose_name='邮箱', null=True, default="")
     mobile = models.CharField(verbose_name='手机号', max_length=16, null=False, blank=False)
     real_name = models.CharField(verbose_name='真实姓名', max_length=16)
     password = models.CharField(verbose_name='密码', max_length=255, null=False, blank=False)
@@ -30,8 +50,30 @@ class UserProfile(models.Model):
     register_ip = models.CharField(verbose_name='注册IP', max_length=16)
     last_login_ip = models.CharField(verbose_name='上次登陆IP', max_length=16)
     last_login_time = models.DateTimeField(verbose_name='上次登陆时间', null=True, blank=True)
+    is_vip_experience = models.BooleanField(verbose_name='是否为体验VIP用户', default=False)
+    point = models.IntegerField(verbose_name='积分', default=0)
+    POINT_LEVEL = [
+        (1, "交易萌新"),
+        (2, "市场学徒"),
+        (3, "市场新锐"),
+        (4, "策略新手"),
+        (5, "策略学徒"),
+        (6, "图表猎人"),
+        (7, "趋势捕手"),
+        (8, "资金魔术师"),
+        (9, "市场先知"),
+        (10, "交易指挥官"),
+    ]
+    point_level = models.IntegerField(verbose_name='积分等级', default=1, choices=POINT_LEVEL)
+    USER_STUTAS = [
+        (1, "正常"),
+        (2, "封禁"),
+        (3, "冻结"),
+    ]
+    user_stutas = models.IntegerField(verbose_name='用户状态', default=1, choices=USER_STUTAS)
     is_delete = models.BooleanField(verbose_name="是否注销", default=False)
     deleted_at = models.DateTimeField(verbose_name="注销时间", null=True, blank=True)
+
 
     class Meta:
         verbose_name = "用户信息"

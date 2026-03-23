@@ -16,10 +16,29 @@ class UserLoginView(APIView):
     authentication_classes = ()
 
     def get(self, request):
-        user_id = request.query_params.get('user_id')
-        if not UserProfile.objects.filter(id=user_id).exists():
-            return Response({"msg": "用户不存在！", "code": "1003", "response_type": "error"})
-        user = UserProfile.objects.get(id=user_id)
+        # 从 cookie 获取用户信息
+        auth_token = request.COOKIES.get('auth_token')
+        if not auth_token:
+            return Response({"msg": "未登录", "code": "1004", "response_type": "error"})
+        # 解析 cookie
+        parts = auth_token.split('_')
+        print(len(parts))
+        if len(parts) != 3:
+            return Response({"msg": "无效token", "code": "1004", "response_type": "error"})
+        user_id = parts[1]
+        username = parts[2]
+        # 验证 redis
+        r = get_redis_connect()
+        stored_token = r.get(username)
+        print(stored_token)
+        print(auth_token)
+        if stored_token != auth_token:
+            return Response({"msg": "token无效", "code": "1004", "response_type": "error"})
+        # 获取用户
+        try:
+            user = UserProfile.objects.get(id=user_id, username=username)
+        except UserProfile.DoesNotExist:
+            return Response({"msg": "用户不存在", "code": "1003", "response_type": "error"})
         if user.vip_end_time:
             vip_end_time = user.vip_end_time.strftime("%Y-%m-%d %H:%M:%S")
         else:
@@ -30,6 +49,11 @@ class UserLoginView(APIView):
             "response_type": "success",
             "is_vip": user.is_vip,
             "vip_end_time": vip_end_time,
+            "is_vip_experience": user.is_vip_experience,
+            "point": user.point,
+            "point_level": user.point_level,
+            "username": user.username,
+            "email" : user.email, 
         })
         return response
 
@@ -45,7 +69,7 @@ class UserLoginView(APIView):
         # 登陆成功
         r = get_redis_connect()
         cookie = str(uuid.uuid4()) + "_" + str(user.id) + "_" + user.username
-        r.set(username, cookie)
+        r.set(user.username, cookie)
         # 获取用户注册IP
         ip_address = request.META.get('REMOTE_ADDR')
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')  # 如果使用代理，可能需要获取 X-Forwarded-For
@@ -73,7 +97,6 @@ class UserLoginView(APIView):
             secure=secure,            # 仅 HTTPS（生产环境）
             samesite='Lax'
         )
-        print("response:", response)
         return response
 
 

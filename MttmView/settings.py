@@ -38,7 +38,7 @@ else:
 ALLOWED_HOSTS = ["*"]
 
 # Redis配置
-REDIS_HOST = "127.0.0.1"
+REDIS_HOST = "47.108.213.197"
 REDIS_PORT = 6379
 REDIS_PASSWORD = env.str('REDIS_PASSWORD', default='Qiuqi1201.')
 # Application definition
