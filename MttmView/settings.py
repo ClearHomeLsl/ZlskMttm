@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.kline',
     'apps.aliyun_pay',
+    'apps.news',
     'corsheaders',
 ]
 
