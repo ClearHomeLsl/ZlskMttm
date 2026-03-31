@@ -88,7 +88,7 @@ class AliPayNotifyView(APIView):
     def post(self, request):
         data = request.POST.dict()
         success = alipay.verify(data, data.get("sign"))
-        if data.get("sign", False):
+        if success:
             # 处理支付成功的逻辑
             out_trade_no = data.get('out_trade_no')  # 商户订单号
             # trade_no = data.get('trade_no')  # 支付宝交易号
@@ -116,7 +116,7 @@ class AliPayMentResultView(APIView):
         data = request.GET.dict()
         print(data)
         success = alipay.verify(data, data.get("sign"))
-        if data.get("sign", False):
+        if success:
             # 支付成功
             order_info = {
                 'order_no': data.get('out_trade_no', 'TEST001'),
