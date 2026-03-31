@@ -22,4 +22,5 @@ urlpatterns = [
     path(r'', include('apps.users.urls')),
     path(r'', include('apps.kline.urls')),
     path(r'', include('apps.aliyun_pay.urls')),
+    path(r'', include('apps.news.urls')),
 ]

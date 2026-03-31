@@ -15,6 +15,9 @@ from pathlib import Path
 from utils.DBMysql import DATABASES
 import os
 
+import warnings
+warnings.filterwarnings('ignore', category=RuntimeWarning, module='django.db.models.fields')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -144,7 +147,7 @@ TIME_ZONE = 'Asia/Shanghai'  # 亚洲/上海
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -161,6 +164,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # 重要：必须配置
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+now_url = "http://127.0.0.1:8000"
 
 # 短信功能密钥
 AccessKeyId = env.str('AccessKeyId', default='x')

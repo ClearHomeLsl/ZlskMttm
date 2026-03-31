@@ -20,13 +20,7 @@ def get_news():
     news = ycnbc.News()
     finance_news = news.finance()  # 获取金融新闻列表
     df = pd.DataFrame(finance_news)
-    df['time_clean'] = df['time'].str.replace(r'(\d+)(st|nd|rd|th)', r'\1', regex=True)
-    df['datetime'] = pd.to_datetime(df['time_clean'], format='%a, %b %d %Y')
-    now = df.iloc[0]["datetime"]
-    df = df[df["datetime"] == now]
-
-    print(f"时间: {datetime.datetime.now()}, 获取到 {len(df.shape[0])} 条新闻")
-
+    print(f"时间: {datetime.datetime.now()}, 获取到 {df.shape[0]} 条新闻")
     for idx in range(df.shape[0]):
         url = df.iloc[idx]['link']
         title = df.iloc[idx]['headline']

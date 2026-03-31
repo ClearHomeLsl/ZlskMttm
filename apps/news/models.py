@@ -36,9 +36,9 @@ from django.contrib.auth.hashers import make_password, check_password
 
 class FinanceNews(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(verbose_name='标题', max_length=50, null=False, blank=False)
+    title = models.CharField(verbose_name='标题', max_length=255, null=False, blank=False)
     content = models.TextField(verbose_name='内容', null=False, blank=False)
-    author = models.CharField(verbose_name='作者', max_length=16, null=False, blank=False)
+    author = models.CharField(verbose_name='作者', max_length=255, null=False, blank=False)
     news_link = models.URLField(verbose_name='文章链接', null=False, blank=False)
     release_time = models.DateTimeField(verbose_name='发布时间', null=False, blank=False)
     add_time = models.DateTimeField(verbose_name='添加时间', null=False, blank=False)

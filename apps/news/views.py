@@ -5,15 +5,18 @@ from apps.users.models import *
 from rest_framework.response import Response
 from apps.news.models import FinanceNews
 from utils.DBRedis import get_redis_connect
+from utils.user_login_verify import login_verify
 
 
 class NewsListView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
     def get(self, request):
-        user_id = request.user.id
-        if not user_id:
-            return Response({"msg": "用户不存在!", "msg_code": "1003"})
-        if not UserProfile.objects.filter(id=user_id).exists():
-            return Response({"msg": "用户不存在!", "msg_code": "1003"})
+        # 从 cookie 获取用户信息
+        auth_token = request.COOKIES.get('auth_token')
+        is_login, jg = login_verify(auth_token)
+        if is_login:
+            return jg
         news = FinanceNews.objects.order_by("-release_time")[:10]
         datas = list()
         for new in news:
@@ -24,6 +27,7 @@ class NewsListView(APIView):
                 "author": new.author,
                 "news_link": new.news_link,
                 "release_time": new.release_time,
+                "source": "CNBC"
             })
         r = get_redis_connect()
         before_last_up_time = r.get("before_last_up_time")
