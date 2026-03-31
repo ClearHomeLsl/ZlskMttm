@@ -3,3 +3,4 @@
 *.sock
 *.pyc
 staticfiles/*
+static/images/study/*
