@@ -11,15 +11,15 @@ from MttmView.settings import *
 
 
 
-# # 创建支付宝支付
-# alipay = AliPay(
-#     appid=ALIPAY_CONFIG['app_id'],
-#     app_notify_url=None,  # 默认回调url
-#     app_private_key_string=ALIPAY_CONFIG['app_private_key'],  # 应用私钥文件
-#     alipay_public_key_string=ALIPAY_CONFIG['alipay_public_key'],  # 支付宝公钥文件
-#     sign_type="RSA2",  # RSA 或者 RSA2
-#     debug=False  # 沙箱模式True，正式环境False
-# )
+# 创建支付宝支付
+alipay = AliPay(
+    appid=ALIPAY_CONFIG['app_id'],
+    app_notify_url=None,  # 默认回调url
+    app_private_key_string=ALIPAY_CONFIG['app_private_key'],  # 应用私钥文件
+    alipay_public_key_string=ALIPAY_CONFIG['alipay_public_key'],  # 支付宝公钥文件
+    sign_type="RSA2",  # RSA 或者 RSA2
+    debug=False  # 沙箱模式True，正式环境False
+)
 
 # Create your views here.
 class AliyunPayView(APIView):

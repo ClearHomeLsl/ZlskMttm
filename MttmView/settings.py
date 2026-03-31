@@ -181,11 +181,11 @@ AlipayPublicKey = env.str('AlipayPublicKey', default="1")
 
 APPID = env.str('APPID', default='94')
 
-AppNotifyUrl = env.str('AppNotifyUrl', default='q')
+AppNotifyUrl = env.str('AppNotifyUrl', default='https://my.zlsk.me/api/aliyun_pay/call_back/')
 
-ReturnUrl = env.str('ReturnUrl', default='z')
+ReturnUrl = env.str('ReturnUrl', default='https://my.zlsk.me/api/aliyun_pay/payment_result/')
 
-NotifyUrl = env.str('NotifyUrl', default='c')
+NotifyUrl = env.str('NotifyUrl', default='https://my.zlsk.me/api/aliyun_pay/alipay_notify/')
 
 ALIPAY_CONFIG = {
     'app_id': APPID,
@@ -198,3 +198,5 @@ ALIPAY_CONFIG = {
     'return_url': ReturnUrl,
     'notify_url': NotifyUrl,
 }
+
+
