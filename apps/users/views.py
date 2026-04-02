@@ -13,10 +13,7 @@ from django.db.models import Q
 from utils.user_login_verify import login_verify
 from decimal import Decimal
 from django.db import transaction
-from django.conf import settings
 from django_ckeditor_5.forms import UploadFileForm
-from django_ckeditor_5.storage_utils import image_verify
-from django_ckeditor_5.exceptions import NoImageException
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from MttmView.settings import now_url
@@ -49,6 +46,7 @@ class UserLoginView(APIView):
             "username": user.username,
             "email" : user.email,
             "user_stutas": user.user_stutas,
+            "user_id": user.id
         })
         return response
 
@@ -330,10 +328,14 @@ class StudyContentView(APIView):
                 "user": ok_d.user.username,
                 "create_time": ok_d.create_at.strftime("%Y-%m-%d %H:%M:%S"),
                 "cover_image_path": ok_d.cover_image_path,
-                # "good_count": StudyGood.objects.filter(study_content=ok_d).count(),
+                "status": ok_d.status,
+                "good_count": StudyGood.objects.filter(study_content=ok_d, is_del=False).count(),
+                "comment_count": StudyComment.objects.filter(study_content=ok_d, is_del=False).count(),
+                "is_my": ok_d.user.id == user.id,
+
             })
         # 获取当前还在审核中的文章
-        ing_data = StudyContent.objects.filter(status=2, user=user)
+        ing_data = StudyContent.objects.filter(status__in=[1,3], user=user)
         for ing_d in ing_data:
             result.append({
                 "id": ing_d.id,
@@ -342,9 +344,13 @@ class StudyContentView(APIView):
                 "user": ing_d.user.username,
                 "create_time": ing_d.create_at.strftime("%Y-%m-%d %H:%M:%S"),
                 "cover_image_path": ing_d.cover_image_path,
-                # "good_count": 0
+                "status": ing_d.status,
+                "good_count": 0,
+                "comment_count": 0,
+                "is_my": True,
             })
-        return Response({"msg": "ok", "msg_code": "0"})
+        # print(result)
+        return Response({"msg": "ok", "msg_code": "0", "data": result})
 
     def post(self, request):
         auth_token = request.COOKIES.get('auth_token')
@@ -374,19 +380,25 @@ class StudyContentDetailView(APIView):
     def get(self, request, content_id):
         auth_token = request.COOKIES.get('auth_token')
         is_login, jg = login_verify(auth_token)
+        print(is_login, jg)
         if is_login:
             return jg
         user = jg
         study_content = StudyContent.objects.get(id=content_id)
-        good_count = StudyGood.objects.filter(study_content=study_content, is_del=False).count()
+        goods = StudyGood.objects.filter(study_content=study_content, is_del=False)
+        good_count = goods.count()
+        good_ids = goods.values_list("user__id", flat=True)
         comments = StudyComment.objects.filter(study_content=study_content, is_del=False)
         comments_detail = []
         for comment in comments:
+            comments_good = StudyCommentGood.objects.filter(comment=comment, is_del=False)
             comments_detail.append({
                 "id": comment.id,
                 "create_time": comment.create_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "comment": comment,
-                "good_count": StudyCommentGood.objects.filter(comment=comment, is_del=False).count(),
+                "comment": comment.comment,
+                "good_count": comments_good.count(),
+                "good_ids": comments_good.values_list("user__id", flat=True),
+                "username": "Zlsk用户"+ comment.user.username,
             })
         data = {
             "id": study_content.id,
@@ -396,32 +408,37 @@ class StudyContentDetailView(APIView):
             "create_time": study_content.create_at.strftime("%Y-%m-%d %H:%M:%S"),
             "user": study_content.user.username,
             "good_count": good_count,
+            "good_id": good_ids,
             "is_my": study_content.user.id == user.id,
+
         }
+        print(data)
         return Response({"msg": "ok", "msg_code": "0", "data": data})
 
-    def post(self, request):
+    def post(self, request, content_id):
         auth_token = request.COOKIES.get('auth_token')
         is_login, jg = login_verify(auth_token)
         if is_login:
             return jg
         user = jg
-        content_id = request.data.get('content_id')
         oper_type = request.data.get('oper_type')
+        print(request.data)
         if oper_type == "good":
             is_good = request.data.get('is_good')
-            if StudyGood.objects.filter(content=content_id, user=user).exists():
-                good_oper = StudyGood.objects.get(content=content_id, user=user)
-                if good_oper.is_del != good_oper:
-                    good_oper.is_del = good_oper
+            if StudyGood.objects.filter(study_content__id=content_id, user=user).exists():
+                good_oper = StudyGood.objects.get(study_content__id=content_id, user=user)
+                if good_oper.is_del != is_good:
+                    good_oper.is_del = is_good
                     good_oper.save()
             else:
-                StudyGood.objects.create(content=content_id, user=user, is_del=is_good)
+                content = StudyContent.objects.get(id=content_id)
+                StudyGood.objects.create(study_content=content, user=user, is_del=is_good)
             return Response({"msg": "ok", "code": "0"})
         elif oper_type == "comment":
             comment = request.data.get('comment')
-            if not StudyComment.objects.filter(content=content_id, user=user, comment=comment).exists():
-                StudyComment.objects.create(content=content_id, user=user, comment=comment)
+            if not StudyComment.objects.filter(study_content__id=content_id, user=user, comment=comment).exists():
+                content = StudyContent.objects.get(id=content_id)
+                StudyComment.objects.create(study_content=content, user=user, comment=comment)
             return Response({"msg": "ok", "code": "0"})
         else:
             return Response({"msg": "参数异常！", "code": "1001"})
@@ -443,9 +460,10 @@ class CommentOperGoodView(APIView):
             return Response({"msg": "参数异常", "code": "0"})
         if StudyCommentGood.objects.filter(comment__id=comment_id, user=user).exists():
             good_oper = StudyCommentGood.objects.get(comment__id=comment_id, user=user)
-            if good_oper.is_del != good_oper:
-                good_oper.is_del = good_oper
+            if good_oper.is_del != is_good:
+                good_oper.is_del = is_good
                 good_oper.save()
         else:
-            StudyCommentGood.objects.create(comment__id=comment_id, user=user, is_del=is_good)
+            comment = StudyComment.objects.get(id=comment_id)
+            StudyCommentGood.objects.create(comment=comment, user=user, is_del=is_good)
         return Response({"msg": "ok", "code": "0"})

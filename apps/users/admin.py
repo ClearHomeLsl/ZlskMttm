@@ -113,3 +113,31 @@ class StudyContentAdmin(admin.ModelAdmin):
     reject.short_description = '审核不通过'
 
     actions = [approve, reject]
+
+
+@admin.register(StudyGood)
+class StudyGoodAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'study_content', 'is_del', 'create_at')
+    list_filter = ('is_del', 'create_at')
+    search_fields = ('user__username', 'study_content__id')
+    ordering = ('-create_at',)
+
+
+@admin.register(StudyComment)
+class StudyCommentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'study_content', 'short_comment', 'is_del', 'create_at')
+    list_filter = ('is_del', 'create_at')
+    search_fields = ('user__username', 'comment')
+    ordering = ('-create_at',)
+
+    def short_comment(self, obj):
+        return obj.comment[:30]
+    short_comment.short_description = '评论内容'
+
+
+@admin.register(StudyCommentGood)
+class StudyCommentGoodAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'comment', 'is_del', 'create_at')
+    list_filter = ('is_del', 'create_at')
+    search_fields = ('user__username', 'comment__id')
+    ordering = ('-create_at',)

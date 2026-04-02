@@ -19,28 +19,28 @@ import environ
 
 env = environ.Env()
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env.str('MYSQL_NAME', default='MttmData'),
-        'USER': env.str('MYSQL_USER', default='MttmUser'),
-        'PASSWORD': env.str('MYSQL_PASSWORD', default='Qiuqi001201.'),
-        'HOST': env.str('MYSQL_HOST', default='localhost'),
-        'PORT': int(env.str('MYSQL_PORT', default='3306')),
-        'CONN_MAX_AGE': 60 * 3,  # 连接最大存活时间(秒)
-        'POOL_SIZE': 10,  # 连接池大小
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': env.str('MYSQL_NAME', default='zlsk'),
+#         'NAME': env.str('MYSQL_NAME', default='MttmData'),
 #         'USER': env.str('MYSQL_USER', default='MttmUser'),
-#         'PASSWORD': env.str('MYSQL_PASSWORD', default='Zlsk@2025'),
-#         'HOST': env.str('MYSQL_HOST', default='47.108.213.197'),
+#         'PASSWORD': env.str('MYSQL_PASSWORD', default='Qiuqi001201.'),
+#         'HOST': env.str('MYSQL_HOST', default='localhost'),
 #         'PORT': int(env.str('MYSQL_PORT', default='3306')),
 #         'CONN_MAX_AGE': 60 * 3,  # 连接最大存活时间(秒)
 #         'POOL_SIZE': 10,  # 连接池大小
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env.str('MYSQL_NAME', default='zlsk'),
+        'USER': env.str('MYSQL_USER', default='MttmUser'),
+        'PASSWORD': env.str('MYSQL_PASSWORD', default='Zlsk@2025'),
+        'HOST': env.str('MYSQL_HOST', default='47.108.213.197'),
+        'PORT': int(env.str('MYSQL_PORT', default='3306')),
+        'CONN_MAX_AGE': 60 * 3,  # 连接最大存活时间(秒)
+        'POOL_SIZE': 10,  # 连接池大小
+    }
+}

@@ -246,4 +246,10 @@ class StudyCommentGood(models.Model):
         verbose_name_plural = verbose_name
 
 
+# class StudyOperDoc(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     user = models.ForeignKey(UserProfile, verbose_name='<UNK>', on_delete=models.CASCADE)
+#     content = model
+
+
 
