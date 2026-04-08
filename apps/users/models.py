@@ -248,7 +248,7 @@ class StudyCommentGood(models.Model):
 
 class EmailSub(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.CharField(verbose_name='邮箱', null=False, blank=False)
+    email = models.CharField(verbose_name='邮箱', null=False, blank=False, max_length=50)
     is_sub= models.BooleanField(verbose_name='是否订阅', default=False)
     # TODO 暂无取消订阅方法
     del_time = models.DateTimeField(verbose_name='取消订阅时间', null=True, blank=True)
@@ -261,9 +261,9 @@ class EmailSub(models.Model):
 
 class AgencyApplication(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(verbose_name='姓名', null=False, blank=False)
-    mobile = models.CharField(verbose_name='联系方式', null=False, blank=False)
-    email = models.CharField(verbose_name='电子邮箱', null=False, blank=False)
+    name = models.CharField(verbose_name='姓名', null=False, blank=False, max_length=10)
+    mobile = models.CharField(verbose_name='联系方式', null=False, blank=False, max_length=20)
+    email = models.CharField(verbose_name='电子邮箱', null=False, blank=False, max_length=40)
     content = models.TextField(verbose_name='合作意向描述', null=False, blank=False)
     create_at = models.DateTimeField(verbose_name='申请时间', default=timezone.now, null=False, blank=False)
     is_connect = models.BooleanField(verbose_name='是否已联系', default=False)
