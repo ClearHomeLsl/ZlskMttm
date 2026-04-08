@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render
 from rest_framework.views import APIView
 from apps.users.models import *
@@ -467,3 +469,46 @@ class CommentOperGoodView(APIView):
             comment = StudyComment.objects.get(id=comment_id)
             StudyCommentGood.objects.create(comment=comment, user=user, is_del=is_good)
         return Response({"msg": "ok", "code": "0"})
+
+
+class MessageRecordView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
+
+    def post(self, request):
+        email = request.data.get('email')
+        if EmailSub.objects.filter(email=email).exists():
+            return Response({"msg": f"邮箱{email}已订阅，无法重复订阅! ", "msg_code": "2001"})
+        EmailSub.objects.create(email=email)
+        return Response({"msg": "ok", "code": "0"})
+
+
+class AgencyApplicationView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
+
+    def post(self, request):
+        name = request.data.get('name')
+        mobile = request.data.get('mobile')
+        email = request.data.get('email')
+        content = request.data.get('content')
+        if AgencyApplication.objects.filter(name=name, mobile=mobile,
+                                            email=email, content=content, is_connect=False).exists():
+            return Response({"msg": f"该申请已有,请勿重复申请!  ", "msg_code": "2001"})
+        AgencyApplication.objects.create(name=name, mobile=mobile,email=email, content=content)
+        return Response({"msg": "ok", "code": "0"})
+
+
+class UserChangeView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
+
+    def post(self, request):
+        auth_token = request.COOKIES.get('auth_token')
+        is_login, jg = login_verify(auth_token)
+        if is_login:
+            return jg
+        user = jg
+        user.email = request.data.get('email')
+        user.save()
+        return Response({"msg": "ok", "code": "0", "email": user.email})
