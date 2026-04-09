@@ -34,8 +34,17 @@ class UserLoginView(APIView):
         user = jg
         if user.vip_end_time:
             vip_end_time = user.vip_end_time.strftime("%Y-%m-%d %H:%M:%S")
+            # 判断会员是否过期
+            now = datetime.now()
+            if user.vip_end_time < now:
+                # 会员已过期
+                user.vip_end_time = None
+                user.is_vip = False
+                user.save()
+                vip_end_time = ""
         else:
             vip_end_time = ""
+
         response = Response({
             "msg": "ok!",
             "msg_code": "0",
@@ -56,6 +65,7 @@ class UserLoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
+        print(request.data)
         if not UserProfile.objects.filter(Q(username=username)|Q(mobile=username)).exists():
             return Response({"msg": "用户不存在！", "code": "1003", "response_type": "error"})
         user = UserProfile.objects.get(Q(username=username)|Q(mobile=username))
@@ -247,9 +257,6 @@ class GameCenterView(APIView):
                 "result": result_dict.get(signup.result) if signup.is_end else "待开奖",
             }
             sign_history.append(data)
-        print(ing_game_data)
-        print("===" * 20)
-        print(sign_history)
         return Response({"msg": "ok", "msg_code": "0", "ing_game_data": ing_game_data, "sign_history": sign_history})
 
     @transaction.atomic
@@ -261,6 +268,10 @@ class GameCenterView(APIView):
         guess = request.data.get('guess')
         game_id = request.data.get('game_id')
         point = request.data.get('point')
+        try:
+            point = int(point)
+        except ValueError:
+            return Response({"msg": "参数异常!", "code": "1001",})
         user = jg
         if UserGameSignUp.objects.filter(game_center__id=game_id, user_id=user.id).exists():
             return Response({"msg": "该竞猜已报名，请勿重复报名。", "code": "2001",})
@@ -382,7 +393,6 @@ class StudyContentDetailView(APIView):
     def get(self, request, content_id):
         auth_token = request.COOKIES.get('auth_token')
         is_login, jg = login_verify(auth_token)
-        print(is_login, jg)
         if is_login:
             return jg
         user = jg
@@ -424,7 +434,6 @@ class StudyContentDetailView(APIView):
             return jg
         user = jg
         oper_type = request.data.get('oper_type')
-        print(request.data)
         if oper_type == "good":
             is_good = request.data.get('is_good')
             if StudyGood.objects.filter(study_content__id=content_id, user=user).exists():

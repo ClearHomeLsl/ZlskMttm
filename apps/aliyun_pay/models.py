@@ -47,3 +47,18 @@ class AliPaymentOrder(models.Model):
 
     def __str__(self):
         return f"{self.orderid} - {self.subject}"
+
+
+class AliyunPaySymbol(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="充值金额", default=0)
+    name = models.CharField(max_length=100, verbose_name="产品名", null=False)
+    subject = models.CharField(max_length=100, verbose_name="主题", null=False, default="四川智链数科VIP充值")
+    body = models.CharField(max_length=100, verbose_name="产品详情", null=False)
+    point = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="赠送积分", default=0)
+    add_vip_time = models.IntegerField(null=True, blank=True, verbose_name="会员增加时长")
+    is_del = models.BooleanField(default=False, verbose_name="是否下架")
+
+    class Meta:
+        verbose_name = "允许交易alipay产品"
+        verbose_name_plural = verbose_name

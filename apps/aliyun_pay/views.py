@@ -3,78 +3,77 @@ from alipay import AliPay
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from apps.aliyun_pay.models import  AliPaymentOrder
+from apps.aliyun_pay.models import  AliPaymentOrder,AliyunPaySymbol
 from apps.users.models import UserProfile
-from decimal import Decimal
-from utils.pay import AlipayPayment
 from MttmView.settings import *
+from utils.user_login_verify import login_verify
 
 
 
 # 创建支付宝支付
 alipay = AliPay(
-    appid=ALIPAY_CONFIG['app_id'],
+    appid=APPID,
     app_notify_url=None,  # 默认回调url
-    app_private_key_string=ALIPAY_CONFIG['app_private_key'],  # 应用私钥文件
-    alipay_public_key_string=ALIPAY_CONFIG['alipay_public_key'],  # 支付宝公钥文件
+    app_private_key_string=AppPrivateKey,  # 应用私钥文件
+    alipay_public_key_string=AlipayPublicKey,  # 支付宝公钥文件
     sign_type="RSA2",  # RSA 或者 RSA2
     debug=True  # 沙箱模式True，正式环境False
 )
 
 # Create your views here.
 class AliyunPayView(APIView):
+
+    def get(self, request):
+        auth_token = request.COOKIES.get('auth_token')
+        is_login, jg = login_verify(auth_token)
+        if is_login:
+            return jg
+        symbols = AliyunPaySymbol.objects.filter(is_del=False).order_by("total_amount")
+        data = list()
+        for symbol in symbols:
+            data.append({
+                "symbol_id": symbol.id,
+                "total_amount": symbol.total_amount,
+                "name": symbol.name,
+                "subject": symbol.subject,
+                "body": symbol.body,
+                "point": symbol.point
+            })
+        return Response({"msg": "ok!", "code": "0", "data": data})
+
+
     def post(self, request):
-        user_id = request.data.get('user_id')
-        trade_type = request.data.get('type')
-        amount = request.data.get('amount')
-        points = request.data.get('points')
-        user = UserProfile.objects.get(id=user_id)
-        subject = "四川智链数科VIP充值"
-        if trade_type == "day":
-            body = "VIP日卡"
-            add_vip_time = 1
-        elif trade_type == "week":
-            body = "VIP周卡"
-            add_vip_time = 7
-        elif trade_type == "month":
-            body = "VIP月卡"
-            add_vip_time = 30
-        elif trade_type == "three_month":
-            body = "VIP季卡"
-            add_vip_time = 90
-        elif trade_type == "half":
-            body = "VIP半年卡"
-            add_vip_time = 180
-        elif trade_type == "year":
-            body = "VIP年卡"
-            add_vip_time = 365
-        else:
-            return Response({"msg": "参数异常！", "msg_code": "300001"})
-        # 获取充值金额，并换汇
-        total_amount = round(Decimal(amount) * Decimal(7.1), 2)
-        print(total_amount , subject, body)
+        auth_token = request.COOKIES.get('auth_token')
+        is_login, jg = login_verify(auth_token)
+        if is_login:
+            return jg
+        user = jg
+        symbol_id = request.data.get('symbol_id')
+        try:
+            symbol = AliyunPaySymbol.objects.get(id=symbol_id, is_del=False)
+        except UserProfile.DoesNotExist:
+            return True, Response({"msg": "无效交易产品!", "code": "1003", "response_type": "error"})
         # 保存订单到数据库
         order = AliPaymentOrder.objects.create(
-            total_amount=total_amount,
-            subject=subject,
-            body=body,
+            total_amount=symbol.total_amount,
+            subject=symbol.subject,
+            body=symbol.body,
             user=user,
             status='pending',
-            point=Decimal(points),
-            add_vip_time=add_vip_time
+            point=symbol.point,
+            add_vip_time=symbol.add_vip_time,
         )
 
         order_string = alipay.api_alipay_trade_page_pay(
             out_trade_no=str(order.orderid),  # 商户订单号
-            total_amount=str(total_amount),  # 金额（元）
-            subject="subject",  # 订单标题
-            body=body,
-            return_url=ALIPAY_CONFIG["return_url"],  # 支付后跳转页面
-            notify_url=ALIPAY_CONFIG["notify_url"]  # 支付结果异步通知地址
+            total_amount=str(symbol.total_amount),  # 金额（元）
+            subject=symbol.subject,  # 订单标题
+            body=symbol.body,
+            return_url=ReturnUrl,  # 支付后跳转页面
+            notify_url=NotifyUrl  # 支付结果异步通知地址
         )
 
-        pay_url = "https://openapi-sandbox.dl.alipaydev.com/gateway.do?" + order_string
-        print(pay_url)
+        pay_url = PayUrl + order_string
         # 重定向到支付宝支付页面
         return Response({"msg": "ok!", "code": "0", "response_type": "success", "pay_url": pay_url})
 

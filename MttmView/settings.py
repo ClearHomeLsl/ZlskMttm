@@ -41,8 +41,8 @@ else:
 ALLOWED_HOSTS = ["*"]
 
 # Redis配置
-REDIS_HOST = "47.108.213.197"
-REDIS_PORT = 6379
+REDIS_HOST = env.str('REDIS_HOST', default="47.108.213.197")
+REDIS_PORT = env.str('REDIS_PORT', default=6379)
 REDIS_PASSWORD = env.str('REDIS_PASSWORD', default='Qiuqi1201.')
 # Application definition
 
@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'apps.aliyun_pay',
     'apps.news',
     'corsheaders',
+    'channels'
 ]
 
 
@@ -187,16 +188,21 @@ ReturnUrl = env.str('ReturnUrl', default='https://my.zlsk.me/api/aliyun_pay/paym
 
 NotifyUrl = env.str('NotifyUrl', default='https://my.zlsk.me/api/aliyun_pay/alipay_notify/')
 
-ALIPAY_CONFIG = {
-    'app_id': APPID,
-    'app_notify_url': AppNotifyUrl,
-    'app_private_key': AppPrivateKey,  # APP 私钥
-    'app_public_key': AppPublicKey,  # APP 公钥
-    'alipay_public_key': AlipayPublicKey,  # 支付宝公钥
-    'sign_type': 'RSA2',
-    'debug': True,  # 测试环境
-    'return_url': ReturnUrl,
-    'notify_url': NotifyUrl,
-}
+PayUrl = env.str("AliPayUrl", "https://openapi-sandbox.dl.alipaydev.com/gateway.do?")
 
+# werbsocket
+ASGI_APPLICATION = "MttmView.routing.application"
+
+# Channel Layer 配置
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [{
+                # "address": "redis://:your_redis_password@localhost:6379/0",
+                "address": f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0"
+            }],
+        },
+    },
+}
 
