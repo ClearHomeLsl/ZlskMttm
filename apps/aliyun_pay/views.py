@@ -85,7 +85,7 @@ class AliyunPayCallBackView(APIView):
 
 class AliPayNotifyView(APIView):
     def post(self, request):
-        data = request.data
+        data = request.POST.dict()
         sign = data.pop("sign")
         success = alipay.verify(data, sign)
         if success:
