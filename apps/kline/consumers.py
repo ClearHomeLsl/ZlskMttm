@@ -25,8 +25,11 @@ class KlineConsumer(AsyncWebsocketConsumer):
         """客户端连接时进行认证"""
         # 从cookies或查询参数获取认证信息
         query_string = self.scope.get("query_string")
-        auth_token = query_string.decode().split("=")[1]
-
+        auth_token, timeframe, symbol = query_string.decode().split("&")
+        auth_token = auth_token.split("=")[1]
+        timeframe = timeframe.split("=")[1]
+        symbol = symbol.split("=")[1]
+        room_name = f"kline_{timeframe}_{symbol}"
         is_login, jg = await login_verify_async(auth_token)
 
         if is_login:
@@ -39,9 +42,10 @@ class KlineConsumer(AsyncWebsocketConsumer):
 
         # 存储订阅的房间
         self.subscribed_rooms = set()
-
+        await self.channel_layer.group_add(room_name, self.channel_name)
         # 接受连接
         await self.accept()
+
 
         # 启动心跳检测（可选）
         self.heartbeat_task = asyncio.create_task(self.send_heartbeat())

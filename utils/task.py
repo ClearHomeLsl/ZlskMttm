@@ -73,7 +73,7 @@ async def main():
 
         # 每秒执行一次
         elapsed = time.time() - start_time
-        sleep_time = max(0, 1 - elapsed)
+        sleep_time = max(0, 0.2 - elapsed)
         await asyncio.sleep(sleep_time)
         count += 1
 

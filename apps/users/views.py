@@ -52,6 +52,7 @@ class UserLoginView(APIView):
             "is_vip": user.is_vip,
             "vip_end_time": vip_end_time,
             "is_vip_experience": user.is_vip_experience,
+            "is_receive_vip": user.is_receive_vip,
             "point": user.point,
             "point_level": user.point_level,
             "username": user.username,
