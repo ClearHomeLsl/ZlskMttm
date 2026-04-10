@@ -85,8 +85,9 @@ class AliyunPayCallBackView(APIView):
 
 class AliPayNotifyView(APIView):
     def post(self, request):
-        data = request.POST.dict()
-        success = alipay.verify(data, data.get("sign"))
+        data = request.data
+        sign = data.pop("sign")
+        success = alipay.verify(data, sign)
         if success:
             # 处理支付成功的逻辑
             out_trade_no = data.get('out_trade_no')  # 商户订单号
@@ -113,8 +114,8 @@ class AliPayNotifyView(APIView):
 class AliPayMentResultView(APIView):
     def get(self, request):
         data = request.GET.dict()
-        print(data)
-        success = alipay.verify(data, data.get("sign"))
+        sign = data.pop("sign")
+        success = alipay.verify(data, sign)
         if success:
             # 支付成功
             order_info = {
