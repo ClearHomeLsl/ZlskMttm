@@ -18,7 +18,7 @@ from django.db import transaction
 from django_ckeditor_5.forms import UploadFileForm
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from MttmView.settings import now_url
+from MttmView.settings import study_file_path
 
 
 class UserLoginView(APIView):
@@ -317,7 +317,7 @@ class ImageUploadAPIView(APIView):
             saved_path = default_storage.save(upload_path, ContentFile(uploaded_file.read()))
             # 构建可访问的URL
             url = default_storage.url(saved_path)
-            return Response({"url": now_url+url})
+            return Response({"url": study_file_path+url})
         return Response({"msg": "图片上传异常！", "code": "2001" })
 
 

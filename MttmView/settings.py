@@ -166,7 +166,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # 重要：必须配置
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-now_url = "http://127.0.0.1:8000"
+study_file_path = env.str("StudyFilePath", "http://127.0.0.1:8000")
 
 # 短信功能密钥
 AccessKeyId = env.str('AccessKeyId', default='x')
