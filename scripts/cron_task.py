@@ -46,7 +46,6 @@ scheduler.add_job(func=SavePrice,trigger='cron',hour=0,minute=0,id='save_price',
 for job in scheduler.get_jobs():
     print(f"任务ID: {job.id}")
     print(f"任务名称: {job.name}")
-    print(f"下次执行时间: {job.next_run_time}")
     print("-" * 30)
 
 # 启动调度器（阻塞模式）
