@@ -13,13 +13,12 @@ django.setup()
 
 from apps.users.models import *
 from datetime import datetime, timedelta
-from utils.DBRedis import get_redis_connect
 import pandas as pd
 
-def end_game():
+def end_game(r):
     now = datetime.now()
     games = GameCenter.objects.filter(end_time__date=now.date(),result__isnull=True)
-    r = get_redis_connect()
+
     for game in games:
         symbol = game.symbol.name
         trade_day = game.game_date.date().strftime("%Y-%m-%d")

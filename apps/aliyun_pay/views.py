@@ -100,10 +100,12 @@ class AliPayNotifyView(APIView):
             if user.is_vip:
                 # 延长会员到期时间
                 user.vip_end_time += timedelta(days=order.add_vip_time)
+                user.is_vip_experience = False
             else:
                 # 成为会员，并设置会员到期时间
                 user.is_vip = True
                 user.vip_end_time = datetime.now() + timedelta(days=order.add_vip_time)
+                user.is_vip_experience = False
             user.save()
             order.save()
             return Response()
