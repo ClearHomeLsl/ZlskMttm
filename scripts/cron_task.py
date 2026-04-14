@@ -28,7 +28,7 @@ async def main():
     scheduler.add_job(
         func=broadcast_kline_update,
         trigger='interval',
-        seconds=1,
+        seconds=3,
         id='push_gold_m1',
         name='XAUUSDm1',
         args=["XAUUSD", "m1", r],
@@ -38,7 +38,7 @@ async def main():
     scheduler.add_job(
         func=broadcast_kline_update,
         trigger='interval',
-        seconds=1,
+        seconds=3,
         id='push_gold_m5',
         name='XAUUSDm5',
         args=["XAUUSD", "m5", r],
@@ -48,7 +48,7 @@ async def main():
     scheduler.add_job(
         func=broadcast_kline_update,
         trigger='interval',
-        seconds=1,
+        seconds=3,
         id='push_gold_m15',
         name='XAUUSDm15',
         args=["XAUUSD", "m15", r],
@@ -58,7 +58,7 @@ async def main():
     scheduler.add_job(
         func=broadcast_kline_update,
         trigger='interval',
-        seconds=2,
+        seconds=3,
         id='push_gold_m30',
         name='XAUUSDm30',
         args=["XAUUSD", "m30", r],
@@ -68,7 +68,7 @@ async def main():
     scheduler.add_job(
         func=broadcast_kline_update,
         trigger='interval',
-        seconds=2,
+        seconds=5,
         id='push_gold_h1',
         name='XAUUSDh1',
         args=["XAUUSD", "h1", r],
