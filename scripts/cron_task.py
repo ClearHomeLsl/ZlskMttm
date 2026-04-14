@@ -9,18 +9,19 @@ django.setup()
 
 
 
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime
 import pytz
 from utils.push_price import broadcast_kline_update
 from utils.DBRedis import get_redis_connect
 from utils.game_settlement import end_game
 from utils.save_price import SavePrice
+import asyncio
 
 r = get_redis_connect()
 
 # 创建调度器
-scheduler = BlockingScheduler(timezone=pytz.timezone('Asia/Shanghai'))  # 设置时区为北京时间
+scheduler = AsyncIOScheduler(timezone=pytz.timezone('Asia/Shanghai'))  # 设置时区为北京时间
 
 
 # 多重时间框架价格推送 m1
@@ -48,8 +49,11 @@ for job in scheduler.get_jobs():
     print(f"任务名称: {job.name}")
     print("-" * 30)
 
-# 启动调度器（阻塞模式）
+# 启动调度器
+scheduler.start()
+
+# 保持事件循环运行
 try:
-    scheduler.start()
+    asyncio.get_event_loop().run_forever()
 except KeyboardInterrupt:
-    print("\n定时任务已停止")
+    print("定时任务已停止")
