@@ -31,7 +31,8 @@ async def main():
         seconds=1,
         id='push_gold_m1',
         name='XAUUSDm1',
-        args=["XAUUSD", "m1", r]
+        args=["XAUUSD", "m1", r],
+        max_instances=4  # 允许最多5个实例同时运行
     )
     # m5
     scheduler.add_job(
@@ -40,7 +41,8 @@ async def main():
         seconds=1,
         id='push_gold_m5',
         name='XAUUSDm5',
-        args=["XAUUSD", "m5", r]
+        args=["XAUUSD", "m5", r],
+        max_instances=3  # 允许最多5个实例同时运行
     )
     # m15
     scheduler.add_job(
@@ -49,25 +51,28 @@ async def main():
         seconds=1,
         id='push_gold_m15',
         name='XAUUSDm15',
-        args=["XAUUSD", "m15", r]
+        args=["XAUUSD", "m15", r],
+        max_instances=2  # 允许最多5个实例同时运行
     )
     # m30
     scheduler.add_job(
         func=broadcast_kline_update,
         trigger='interval',
-        seconds=1,
+        seconds=2,
         id='push_gold_m30',
         name='XAUUSDm30',
-        args=["XAUUSD", "m30", r]
+        args=["XAUUSD", "m30", r],
+        max_instances=2  # 允许最多5个实例同时运行
     )
     # h1
     scheduler.add_job(
         func=broadcast_kline_update,
         trigger='interval',
-        seconds=1,
+        seconds=2,
         id='push_gold_h1',
         name='XAUUSDh1',
-        args=["XAUUSD", "h1", r]
+        args=["XAUUSD", "h1", r],
+        max_instances=2  # 允许最多5个实例同时运行
     )
     # 每日竞猜结算，每天7点执行
     scheduler.add_job(
