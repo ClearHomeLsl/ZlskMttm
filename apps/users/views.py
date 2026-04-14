@@ -312,7 +312,7 @@ class ImageUploadAPIView(APIView):
             ext = uploaded_file.name.split('.')[-1]
             filename = f"{uuid.uuid4().hex}.{ext}"
             # 指定保存路径（相对于 MEDIA_ROOT）
-            upload_path = os.path.join('static/images/study/', filename)
+            upload_path = os.path.join('media/images/study/', filename)
             # 保存文件
             saved_path = default_storage.save(upload_path, ContentFile(uploaded_file.read()))
             # 构建可访问的URL
