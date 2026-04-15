@@ -32,7 +32,7 @@ async def main():
         id='push_gold_m1',
         name='XAUUSDm1',
         args=["XAUUSD", "m1", r],
-        max_instances=4  # 允许最多5个实例同时运行
+        max_instances=1
     )
     # m5
     scheduler.add_job(
@@ -42,7 +42,7 @@ async def main():
         id='push_gold_m5',
         name='XAUUSDm5',
         args=["XAUUSD", "m5", r],
-        max_instances=3  # 允许最多5个实例同时运行
+        max_instances=1
     )
     # m15
     scheduler.add_job(
@@ -52,7 +52,7 @@ async def main():
         id='push_gold_m15',
         name='XAUUSDm15',
         args=["XAUUSD", "m15", r],
-        max_instances=2  # 允许最多5个实例同时运行
+        max_instances=1
     )
     # m30
     scheduler.add_job(
@@ -62,7 +62,7 @@ async def main():
         id='push_gold_m30',
         name='XAUUSDm30',
         args=["XAUUSD", "m30", r],
-        max_instances=2  # 允许最多5个实例同时运行
+        max_instances=1
     )
     # h1
     scheduler.add_job(
@@ -72,7 +72,7 @@ async def main():
         id='push_gold_h1',
         name='XAUUSDh1',
         args=["XAUUSD", "h1", r],
-        max_instances=2  # 允许最多5个实例同时运行
+        max_instances=1
     )
     # 每日竞猜结算，每天7点执行
     scheduler.add_job(

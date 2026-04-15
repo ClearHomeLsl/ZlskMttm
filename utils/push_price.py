@@ -20,7 +20,6 @@ async def broadcast_kline_update(symbol, timeframe, r):
     """广播K线更新"""
     channel_layer = get_channel_layer()
     room_name = f"kline_{timeframe}_{symbol}"
-    r = get_redis_connect()
     key = f"{timeframe}_{symbol}_price"
     data = r.get(key)
     if data:
