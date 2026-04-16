@@ -15,6 +15,7 @@ from utils.push_price import broadcast_kline_update
 from utils.DBRedis import get_redis_connect
 from utils.game_settlement import end_game
 from utils.save_price import SavePrice
+from utils.get_news import get_jin_new
 
 r = get_redis_connect()
 
@@ -72,6 +73,15 @@ async def main():
         id='push_gold_h1',
         name='XAUUSDh1',
         args=["XAUUSD", "h1", r],
+        max_instances=1
+    )
+    # 每15分钟尝试获取一次新闻
+    scheduler.add_job(
+        func=get_jin_new,
+        trigger='interval',
+        minutes=15,
+        id='get_jin_new',
+        name='get_jin_new',
         max_instances=1
     )
     # 每日竞猜结算，每天7点执行

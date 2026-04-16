@@ -1,6 +1,8 @@
 import os
 import sys
 import django
+import requests
+from lxml import html
 
 project_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(project_dir)
@@ -45,5 +47,36 @@ def get_news():
     r = get_redis_connect()
     r.set("before_last_up_time", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
+
+def get_jin_new():
+    now = datetime.datetime.now()
+    print(f"=================时间: {now},开始获取新闻=================")
+    url = "https://www.jin10.com/"
+    response =  requests.get(url)
+    tree = html.fromstring(response.content.decode())
+    xpath1 = '/html/body/div[1]/div[2]/div[2]/div/main/div[1]/div[2]/div[2]/div/div'
+    results = tree.xpath(xpath1)
+    for res in results:
+        time_str = res.xpath("../div/div[1]/text()")
+        title = res.xpath("../div/div[2]/div[2]/div[1]/b/text()")
+        content = res.xpath("../div/div[2]/div[2]/div[2]/div/div/div/div/text()")
+        if len(content) == 1:
+            time_obj = datetime.datetime.strptime(time_str[0], '%H:%M:%S').time()
+
+            new_time = datetime.datetime.combine(datetime.date(year=now.year, month=now.month, day=now.day).today(), time_obj)
+            FinanceNews.objects.update_or_create(
+                title=title[0],  # 判断条件
+                release_time=new_time,
+                defaults={  # 需要更新或创建的字段
+                    'content': content[0],
+                    'news_link': url,
+                    'add_time': datetime.datetime.now(),
+                    'author': "jin10",
+                }
+            )
+    print(f"=================时间: {now},结束获取新闻=================")
+
+
+
 if __name__ == '__main__':
-    get_news()
+    get_jin_new()
