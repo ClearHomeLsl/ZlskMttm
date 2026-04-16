@@ -16,6 +16,12 @@ from utils.DBRedis import get_redis_connect
 from utils.game_settlement import end_game
 from utils.save_price import SavePrice
 from utils.get_news import get_jin_new
+import logging
+
+# 在创建调度器之前或之后添加
+logging.getLogger('apscheduler').setLevel(logging.WARNING)
+# 或者更精确地只屏蔽executors
+logging.getLogger('apscheduler.executors').setLevel(logging.WARNING)
 
 r = get_redis_connect()
 

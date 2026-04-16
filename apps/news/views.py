@@ -27,7 +27,7 @@ class NewsListView(APIView):
                 "author": new.author,
                 "news_link": new.news_link,
                 "release_time": new.release_time,
-                "source": "CNBC"
+                "source": "jin10"
             })
         r = get_redis_connect()
         before_last_up_time = r.get("before_last_up_time")
