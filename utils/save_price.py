@@ -2,6 +2,7 @@ import os
 import sys
 import django
 import json
+import logging
 
 project_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(project_dir)
@@ -24,8 +25,8 @@ def SavePrice(r):
     # 获取前天时间
     now = datetime.now() - timedelta(days=1)
     today = now.strftime("%Y-%m-%d")
+
     df = df[df["time"].astype("str").str.contains(today)]
-    print(df)
     if df.shape[0] != 0:
         obj_list = list()
         for idx in range(df.shape[0]):
@@ -43,7 +44,7 @@ def SavePrice(r):
                 ticket=time
             ))
         SymbolHistoryPrice.objects.bulk_create(obj_list)
-
+    logging.error(f"执行保存{today} 的数据完毕, 数据量为{df.shape[0]}。")
 
 if __name__ == '__main__':
     r = get_redis_connect()

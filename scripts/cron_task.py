@@ -2,7 +2,6 @@ import os
 import sys
 import django
 import asyncio
-from datetime import datetime
 import pytz
 
 project_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -112,29 +111,29 @@ async def main():
     )
 
     # 打印任务信息
-    print("定时任务已启动...")
-    print("=" * 50)
+    logging.error("定时任务已启动...")
+    logging.error("=" * 50)
     for job in scheduler.get_jobs():
-        print(f"任务ID: {job.id}")
-        print(f"任务名称: {job.name}")
-        print("-" * 30)
+        logging.error(f"任务ID: {job.id}")
+        logging.error(f"任务名称: {job.name}")
+        logging.error("-" * 30)
 
     # 启动调度器
     scheduler.start()
-    print("调度器已启动，按 Ctrl+C 退出")
+    logging.error("调度器已启动，按 Ctrl+C 退出")
 
     # 保持运行
     try:
         while True:
             await asyncio.sleep(1)
     except KeyboardInterrupt:
-        print("\n正在停止调度器...")
+        logging.error("\n正在停止调度器...")
         scheduler.shutdown()
-        print("定时任务已停止")
+        logging.error("定时任务已停止")
 
 
 if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("程序已退出")
+        logging.error("程序已退出")

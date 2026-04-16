@@ -4,6 +4,7 @@ import os
 import sys
 import django
 import json
+import logging
 
 project_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(project_dir)
@@ -24,14 +25,14 @@ def end_game(r):
         trade_day = game.game_date.date().strftime("%Y-%m-%d")
         data = r.get(f"m30_{symbol}_price")
         if not data:
-            print(f"未获取到{symbol}报价数据")
+            logging.error(f"未获取到{symbol}报价数据")
             continue
         data = json.loads(data)
         df = pd.DataFrame(data)
 
         trade_df = df[df["time"].str.contains(trade_day)]
         if trade_df.shape[0] <= 0:
-            print(f"未获取到{symbol}{trade_day}交易日的报价数据")
+            logging.error(f"未获取到{symbol}{trade_day}交易日的报价数据")
             continue
         open_price = trade_df.iloc[0]["open"]
         close_price = trade_df.iloc[-1]["close"]
@@ -48,7 +49,6 @@ def end_game(r):
         game.save()
         # 处理用户竞猜输赢
         signup_games = UserGameSignUp.objects.filter(game_center=game, is_end=False)
-        print(signup_games)
         for signup in signup_games:
             if signup.guess == result:
                 # 竞猜赢
@@ -77,8 +77,8 @@ def end_game(r):
                 signup.is_end = True
                 signup.end_time = now
                 signup.save()
-        print(f"产品:{symbol},交易日:{trade_day}, 竞猜结算！ ")
-    print("=====" * 15)
+        logging.error(f"产品:{symbol},交易日:{trade_day}, 竞猜结算！ ")
+    logging.error("=====" * 15)
 
 
 if __name__ == '__main__':

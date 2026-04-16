@@ -3,6 +3,7 @@ import sys
 import django
 import requests
 from lxml import html
+import logging
 
 project_dir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(project_dir)
@@ -22,7 +23,7 @@ def get_news():
     news = ycnbc.News()
     finance_news = news.finance()  # 获取金融新闻列表
     df = pd.DataFrame(finance_news)
-    print(f"时间: {datetime.datetime.now()}, 获取到 {df.shape[0]} 条新闻")
+    logging.error(f"时间: {datetime.datetime.now()}, 获取到 {df.shape[0]} 条新闻")
     for idx in range(df.shape[0]):
         url = df.iloc[idx]['link']
         title = df.iloc[idx]['headline']
@@ -43,14 +44,14 @@ def get_news():
                 }
             )
         except Exception as e:
-            print(f"提取失败: {e}")
+            logging.error(f"提取失败: {e}")
     r = get_redis_connect()
     r.set("before_last_up_time", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
 def get_jin_new():
     now = datetime.datetime.now()
-    print(f"=================时间: {now},开始获取新闻=================")
+    logging.error(f"=================时间: {now},开始获取新闻=================")
     url = "https://www.jin10.com/"
     response =  requests.get(url)
     tree = html.fromstring(response.content.decode())
@@ -74,9 +75,7 @@ def get_jin_new():
                     'author': "jin10",
                 }
             )
-    r = get_redis_connect()
-    r.set("before_last_up_time", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    print(f"=================时间: {now},结束获取新闻=================")
+    logging.error(f"=================时间: {now},结束获取新闻=================")
 
 
 
