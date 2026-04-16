@@ -45,8 +45,7 @@ def get_news():
             )
         except Exception as e:
             logging.error(f"提取失败: {e}")
-    r = get_redis_connect()
-    r.set("before_last_up_time", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
 
 
 def get_jin_new():
@@ -75,6 +74,8 @@ def get_jin_new():
                     'author': "jin10",
                 }
             )
+    r = get_redis_connect()
+    r.set("before_last_up_time", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     logging.error(f"=================时间: {now},结束获取新闻=================")
 
 

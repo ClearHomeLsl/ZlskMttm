@@ -81,5 +81,3 @@ def end_game(r):
     logging.error("=====" * 15)
 
 
-if __name__ == '__main__':
-    end_game()
