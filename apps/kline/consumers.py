@@ -265,6 +265,7 @@ class KlineConsumer(AsyncWebsocketConsumer):
             "type": "kline_update",
             "symbol": event['symbol'],
             "timeframe": event['timeframe'],
+            "sap_data": event['sap_data'],
             "data": event['data']
         }))
 
@@ -274,5 +275,6 @@ class KlineConsumer(AsyncWebsocketConsumer):
             "type": "trend_change",
             "symbol": event['symbol'],
             "timeframe": event['timeframe'],
+            "sap_data": event['sap_data'],
             "data": event['data']
         }))
