@@ -80,6 +80,16 @@ async def main():
         args=["XAUUSD", "h1", r],
         max_instances=1
     )
+    # h4
+    scheduler.add_job(
+        func=broadcast_kline_update,
+        trigger='interval',
+        seconds=2,
+        id='push_gold_h4',
+        name='XAUUSDh4',
+        args=["XAUUSD", "h4", r],
+        max_instances=1
+    )
     # 每15分钟尝试获取一次新闻
     scheduler.add_job(
         func=get_jin_new,

@@ -18,6 +18,15 @@ async def broadcast_kline_update(symbol, timeframe, r):
     room_name = f"kline_{timeframe}_{symbol}"
     key = f"{timeframe}_{symbol}_price"
     data = r.get(key)
+    # 获取当前SAP数据
+    sap_data = {
+        "m1_xauusd": r.get("m1_XAUUSD_SAR"),
+        "m5_xauusd": r.get("m5_XAUUSD_SAR"),
+        "m15_xauusd": r.get("m15_XAUUSD_SAR"),
+        "m30_xauusd": r.get("m30_XAUUSD_SAR"),
+        "h1_xauusd": r.get("h1_XAUUSD_SAR"),
+        "h4_xauusd": r.get("h4_XAUUSD_SAR"),
+    }
     if data:
         kline_data = json.loads(data)
         # 更新最新价格
@@ -30,6 +39,7 @@ async def broadcast_kline_update(symbol, timeframe, r):
                     'type': 'kline_update',
                     'symbol': symbol,
                     'timeframe': timeframe,
-                    'data': kline_data
+                    'data': kline_data,
+                    'sap_data': sap_data,
                 }
             )
