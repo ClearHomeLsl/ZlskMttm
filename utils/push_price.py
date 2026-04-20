@@ -39,7 +39,7 @@ async def broadcast_kline_update(symbol, timeframe, r):
                     'type': 'kline_update',
                     'symbol': symbol,
                     'timeframe': timeframe,
-                    'data': kline_data,
                     'sap_data': sap_data,
+                    'data': kline_data,
                 }
             )
