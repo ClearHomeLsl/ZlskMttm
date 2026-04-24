@@ -117,6 +117,7 @@ class AliPayNotifyView(APIView):
                         new_point=user.point,
                         change_oper=3
                     )
+                    user.is_first_pay=False
             user.save()
             order.save()
             return Response()
