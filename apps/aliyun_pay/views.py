@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from apps.aliyun_pay.models import  AliPaymentOrder,AliyunPaySymbol
-from apps.users.models import UserProfile
+from apps.users.models import UserProfile, PointRecord
 from MttmView.settings import *
 from utils.user_login_verify import login_verify
 
@@ -17,7 +17,7 @@ alipay = AliPay(
     app_private_key_string=AppPrivateKey,  # 应用私钥文件
     alipay_public_key_string=AlipayPublicKey,  # 支付宝公钥文件
     sign_type="RSA2",  # RSA 或者 RSA2
-    debug=True  # 沙箱模式True，正式环境False
+    debug=False  # 沙箱模式True，正式环境False
 )
 
 # Create your views here.
@@ -106,6 +106,17 @@ class AliPayNotifyView(APIView):
                 user.is_vip = True
                 user.vip_end_time = datetime.now() + timedelta(days=order.add_vip_time)
                 user.is_vip_experience = False
+                # 首次充值赠送积分
+                if user.is_first_pay:
+                    user.point += order.point
+                    # 赠送积分记录
+                    PointRecord.objects.create(
+                        user=user,
+                        old_point=0,
+                        add_point=order.point,
+                        new_point=user.point,
+                        change_oper=3
+                    )
             user.save()
             order.save()
             return Response()

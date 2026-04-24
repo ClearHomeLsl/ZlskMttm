@@ -72,6 +72,7 @@ class UserProfile(models.Model):
         (3, "冻结"),
     ]
     user_stutas = models.IntegerField(verbose_name='用户状态', default=1, choices=USER_STUTAS)
+    is_first_pay = models.BooleanField(verbose_name="是否已充值", default=True)
     is_delete = models.BooleanField(verbose_name="是否注销", default=False)
     deleted_at = models.DateTimeField(verbose_name="注销时间", null=True, blank=True)
 
