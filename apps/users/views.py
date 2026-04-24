@@ -60,7 +60,7 @@ class UserLoginView(APIView):
             "email" : user.email,
             "user_stutas": user.user_stutas,
             "user_id": user.id,
-            "is_first": user.is_first,
+            "is_first": user.is_first_pay,
         })
         return response
 
