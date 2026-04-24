@@ -18,7 +18,8 @@ from django.db import transaction
 from django_ckeditor_5.forms import UploadFileForm
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from MttmView.settings import study_file_path
+from MttmView.settings import study_file_path, SalesContactInformationData
+
 
 
 class UserLoginView(APIView):
@@ -66,7 +67,7 @@ class UserLoginView(APIView):
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
-        print(request.data)
+        # print(request.data)
         if not UserProfile.objects.filter(Q(username=username)|Q(mobile=username)).exists():
             return Response({"msg": "用户不存在！", "code": "1003", "response_type": "error"})
         user = UserProfile.objects.get(Q(username=username)|Q(mobile=username))
@@ -522,3 +523,14 @@ class UserChangeView(APIView):
         user.email = request.data.get('email')
         user.save()
         return Response({"msg": "ok", "code": "0", "email": user.email})
+
+
+class SalesContactInformationView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request):
+        data = {
+            "content" : SalesContactInformationData
+        }
+        return Response({"msg": "ok", "code": "0", "data": data})

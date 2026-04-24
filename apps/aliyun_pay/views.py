@@ -24,10 +24,10 @@ alipay = AliPay(
 class AliyunPayView(APIView):
 
     def get(self, request):
-        auth_token = request.COOKIES.get('auth_token')
-        is_login, jg = login_verify(auth_token)
-        if is_login:
-            return jg
+        # auth_token = request.COOKIES.get('auth_token')
+        # is_login, jg = login_verify(auth_token)
+        # if is_login:
+        #     return jg
         symbols = AliyunPaySymbol.objects.filter(is_del=False).order_by("total_amount")
         data = list()
         for symbol in symbols:

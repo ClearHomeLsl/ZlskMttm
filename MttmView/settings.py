@@ -206,3 +206,5 @@ CHANNEL_LAYERS = {
     },
 }
 
+
+SalesContactInformationData = """QQ: 3297026261"""
