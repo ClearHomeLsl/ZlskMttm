@@ -92,8 +92,9 @@ class AliPayNotifyView(APIView):
             # 处理支付成功的逻辑
             out_trade_no = data.get('out_trade_no')  # 商户订单号
             # trade_no = data.get('trade_no')  # 支付宝交易号
-
             order = AliPaymentOrder.objects.get(orderid=out_trade_no)
+            if order.status == "paid":
+                return Response()
             order.status = 'paid'
             order.paid_at = datetime.now()
             user = order.user
