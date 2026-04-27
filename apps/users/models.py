@@ -39,8 +39,8 @@ class Person(models.Model):
 
 class UserProfile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    username = models.CharField(verbose_name='用户名', max_length=16, unique=True, null=False, blank=False)
-    email = models.EmailField(verbose_name='邮箱', blank=True, null=True)
+    username = models.CharField(verbose_name='用户名', max_length=255, unique=True, null=False, blank=False)
+    email = models.EmailField(verbose_name='邮箱', max_length=255,blank=True, null=True)
     mobile = models.CharField(verbose_name='手机号', max_length=16, null=False, blank=False)
     real_name = models.CharField(verbose_name='真实姓名', max_length=16, blank=True, null=True)
     password = models.CharField(verbose_name='密码', max_length=255, null=False, blank=False)
