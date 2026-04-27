@@ -11,7 +11,7 @@ from .models import GameSymbol, GameCenter, UserGameSignUp, PointRecord
 class UserProfileAdmin(admin.ModelAdmin):
     """用户信息管理（简化版）"""
 
-    list_display = ['username', 'real_name', 'mobile', 'email', 'is_vip', 'point_level', 'user_stutas', 'create_at']
+    list_display = ['username', 'real_name', 'mobile', 'email', 'is_vip', 'point_level', 'user_stutas', 'create_at', 'vip_end_time', 'is_first_pay']
     list_filter = ['is_vip', 'user_stutas', 'point_level', 'create_at']
     search_fields = ['username', 'real_name', 'mobile', 'email']
     ordering = ['-create_at']
