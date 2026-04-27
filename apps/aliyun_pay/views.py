@@ -108,17 +108,17 @@ class AliPayNotifyView(APIView):
                 user.vip_end_time = datetime.now() + timedelta(days=order.add_vip_time)
                 user.is_vip_experience = False
                 # 首次充值赠送积分
-                if user.is_first_pay:
-                    user.point += order.point
-                    # 赠送积分记录
-                    PointRecord.objects.create(
-                        user=user,
-                        old_point=0,
-                        add_point=order.point,
-                        new_point=user.point,
-                        change_oper=3
-                    )
-                    user.is_first_pay=False
+            if user.is_first_pay:
+                user.point += order.point
+                # 赠送积分记录
+                PointRecord.objects.create(
+                    user=user,
+                    old_point=0,
+                    add_point=order.point,
+                    new_point=user.point,
+                    change_oper=3
+                )
+                user.is_first_pay=False
             user.save()
             order.save()
             return Response()
