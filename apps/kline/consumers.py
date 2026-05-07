@@ -36,7 +36,7 @@ class KlineConsumer(AsyncWebsocketConsumer):
             await self.close(code=4001, reason="登陆验证失败")
             return
         user = jg
-        if user.is_vip:
+        if not user.is_vip:
             await self.close(code=4001, reason="用户权限错误")
             return
         # 保存用户信息
