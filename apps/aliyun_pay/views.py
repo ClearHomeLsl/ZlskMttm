@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
 from alipay import AliPay
 from django.shortcuts import render
+from pip._internal.commands import freeze
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from apps.aliyun_pay.models import  AliPaymentOrder,AliyunPaySymbol
-from apps.users.models import UserProfile, PointRecord
+from apps.users.models import UserProfile, PointRecord, UserActiveAndUser, UserActiveWalletLog
 from MttmView.settings import *
 from utils.user_login_verify import login_verify
+from decimal import Decimal
 
 
 
@@ -121,6 +123,22 @@ class AliPayNotifyView(APIView):
                 user.is_first_pay=False
             user.save()
             order.save()
+            # 增加代理分享逻辑, 执行错误不影响充值功能
+            try:
+                if UserActiveAndUser.objects.filter(client=user).exists():
+                    relationship = UserActiveAndUser.objects.get(client=user)
+                    if user.active_level == 1:
+                        freeze = Decimal(round(order.total_amount * Decimal("0.3"), 2))
+                    else:
+                        freeze = Decimal(round(order.total_amount * Decimal("0.5"), 2))
+                    UserActiveWalletLog.objects.create(
+                        relationship=relationship,
+                        amount=freeze,
+                        thaw_time=datetime.now() + timedelta(days=7),  # 7天后解冻
+                        is_thaw=False,
+                    )
+            except Exception as e:
+                print(f"{user.username} 代理分享逻辑执行错误，原因: {e}")
             return Response()
         else:
             print("签名验证失败！")

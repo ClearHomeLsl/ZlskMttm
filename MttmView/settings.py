@@ -43,7 +43,7 @@ ALLOWED_HOSTS = ["*"]
 # Redis配置
 REDIS_HOST = env.str('REDIS_HOST', default="127.0.0.1")
 REDIS_PORT = env.str('REDIS_PORT', default=6379)
-REDIS_PASSWORD = env.str('REDIS_PASSWORD', default='Qiuqi1201.')
+REDIS_PASSWORD = env.str('REDIS_PASSWORD', default='qiuqi1201.')
 # Application definition
 
 INSTALLED_APPS = [
@@ -173,14 +173,20 @@ AccessKeyId = env.str('AccessKeyId', default='x')
 AccessKeySecret = env.str('AccessKeySecret', default='P')
 # 支付宝配置
 
-AppPrivateKey = env.str("AppPrivateKey","1")
+AppPrivateKey = env.str("AppPrivateKey","""-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEAhtNkZmLicf3IQ0taztN0KZlmX9zS59pVzFc7j9yr1bxsb6I6eBrnt11GOjM7+FLeLxtBjTCSH4o2LkMEhDM/hR2Sd2Lo2G7P9sSUOqTDOOvrbt96iaAYyS+QTqgTp983iqHewbz+XQN+NMIDhrfPohCpGw7tMh3+jxyJ1+8WbDf/Wd8BsumOgx7+xTfAvKl91Ok/eLveTWy6UmURQzCUWcbnEvutKK6NZfm2oE4j61dkJkV61Ec59g+aelA6ZbxzUDg2ccgmfgZasGf3QpRkKG4as9x+AcRLeQhmq4MiD8i8h75W3liJPU+Nh1Gfm471rKDcXht1rX3xr/3W+mY01QIDAQABAoIBAA40Bseicyh/C7HLJm3TaNFZD6fZo345SgCUz/l/zbpedy3rcS1l6DMw6E0JSLAISs+7l1RAYaRg8wQ8myUyIObtDpj1GoJyagYc/2COKuK8N7keYdJNw06ubA1dN3Tf1wILu2O9fS5fR9RW+/gdNQplpurqz6IP9tkssHjG/x23P2cNbPzc8J9wvr6oRVizVTiMllwKqPVN7xLtK6hNnmCjElWJZxZS81xt4vfr4hvUXFbDA3A33BIgrMTMyTUzbouYRo2SFxOZbN7KuU2BA+jx07Phb9IaNJIvsrjXJ31yrVQWYxM9PV1yFZ5PVS53/goI2P4vL+wsHQvf2rLO16ECgYEA/ctcQxcj/46ZWfxwTVr98g/nTvTzfm1YqqLJwzHq7mMOhpbuD/R7Q+ofjZjQzLqVccgcbwpEVNP8HMM0uF/Npk2SliqY8x3ryoSC2b7Y+BUOE6f3G/nJpz+/qMaw+HTKSX4CL/8dTYwqzlA2DUhAS+EgdRs7s88IEHGcnM8Ea8MCgYEAh/9Z9IMUQtpd9hXxIOEzL/bGpuzBXczWfpjnmAY/w7FAuJBh/CODUTgsDh3HuMupBdSLJvXKq87XUGxL7xzmDzJzHiIUoJ/c2D8xDTDiOsLF5jRYV4R+Gh+dZhGLQN6MI+GNBGbItTbyzEC2lauDmDfQ+iI8rPrJyJ9+8bDQC4cCgYEAgzSUERcwhBjbjNrl0Af/ixnPslEOZMjw8t5PwnrXAsDxLIFwt4zkAPtTrqdXItA/HGCg2oMLSnOBPflpEvxsW9J0uu9wvRc15C/XWezBTJfN/Dl0leDv8GgTlJSLvxbZ0V60kM2p/4I8SwbKutkkbFYJqqEWn2GjwKSLm8GmfnMCgYAFHxSgJJ+KtPZ84e6mslRfJgftGVVe1uvs8I0oKHQWRoKNcMJ/4EZ9tIPUNELlLqY61fo3iWIMfkmVeb6STqBLSjcTl2z3b429hwOt331lgRg6xxXcldy51x7yTQ7VbowQfdn1pHlCecNC9dzqXf8iqFdyU/+88+TNbVQ2fdYX2QKBgQDgAll7LYEVGgc7IEpodcR8iSDUvY01DVdh/wddOzFVCsXb2OTrhEYV9WwQ4QkprtpfGC3LtKVVsOTnerJlcaFnGThRqqzdf778+n6trgVX1N3wHjsRBdwoIh0S+owAlcLptQyulLa/5nOnRxifK0WhJFoF1qe2H80wo9W2krGI7g==
+-----END RSA PRIVATE KEY-----""")
 
-AppPublicKey = env.str('AppPublicKey', default="2")
+AppPublicKey = env.str('AppPublicKey', default="""-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhtNkZmLicf3IQ0taztN0KZlmX9zS59pVzFc7j9yr1bxsb6I6eBrnt11GOjM7+FLeLxtBjTCSH4o2LkMEhDM/hR2Sd2Lo2G7P9sSUOqTDOOvrbt96iaAYyS+QTqgTp983iqHewbz+XQN+NMIDhrfPohCpGw7tMh3+jxyJ1+8WbDf/Wd8BsumOgx7+xTfAvKl91Ok/eLveTWy6UmURQzCUWcbnEvutKK6NZfm2oE4j61dkJkV61Ec59g+aelA6ZbxzUDg2ccgmfgZasGf3QpRkKG4as9x+AcRLeQhmq4MiD8i8h75W3liJPU+Nh1Gfm471rKDcXht1rX3xr/3W+mY01QIDAQAB
+-----END PUBLIC KEY-----""")
 
 
-AlipayPublicKey = env.str('AlipayPublicKey', default="1")
+AlipayPublicKey = env.str('AlipayPublicKey', default="""-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0oKXs12rTPhU35XLc7AOR//Nedn48KW0pwLrm5adSL9D4gbdk1XAHci6p47O6e9177BcPgwSofXt2GeSPnPMHjT9VfJ0s0NwfLSsUYAKN9kXa0JCVqxxrQz7a/d71mepKKcRcDsC+oTjVXFuMaFUIYVu58lIZfadGh6d0r8YS2Q7LBQnItWcnunB8/bbHnGX+XjVcicHZwQeSK+aXs8+a6S7WB9DJmHoMAj6AfrXB+BcEDZ/CtEl+kza+JepvKVotKuMZlw5Z3xyvnmp5CTUTZOcjMbQG813/zuctquJ1pGs8XEv5usRl5dGqMhig4cvaDqumGx8WP0WJ3TjRUF3jQIDAQAB
+-----END PUBLIC KEY-----""")
 
-APPID = env.str('APPID', default='94')
+APPID = env.str('APPID', default='9021000131654854')
 
 AppNotifyUrl = env.str('AppNotifyUrl', default='https://my.zlsk.me/api/aliyun_pay/call_back/')
 

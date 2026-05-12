@@ -11,9 +11,9 @@ from .models import GameSymbol, GameCenter, UserGameSignUp, PointRecord
 class UserProfileAdmin(admin.ModelAdmin):
     """用户信息管理（简化版）"""
 
-    list_display = ['username', 'real_name', 'mobile', 'email', 'is_vip', 'point_level', 'user_stutas', 'create_at', 'vip_end_time', 'is_first_pay']
+    list_display = ['username', 'real_name', 'mobile', 'email', 'is_vip', 'point_level', 'user_stutas', 'create_at', 'vip_end_time', 'is_first_pay', "last_login_time", "active_code", "is_active"]
     list_filter = ['is_vip', 'user_stutas', 'point_level', 'create_at']
-    search_fields = ['username', 'real_name', 'mobile', 'email']
+    search_fields = ['username', 'real_name', 'mobile', 'email', "is_active"]
     ordering = ['-create_at']
     list_per_page = 20
 
@@ -35,7 +35,7 @@ class UserProfileAdmin(admin.ModelAdmin):
         }),
     )
 
-    actions = ['make_vip', 'ban_users']
+    actions = ['make_vip', 'become_active']
 
     def make_vip(self, request, queryset):
         updated = queryset.update(is_vip=True, vip_end_time=timezone.now() + timezone.timedelta(days=365))
@@ -43,11 +43,21 @@ class UserProfileAdmin(admin.ModelAdmin):
 
     make_vip.short_description = '设为会员'
 
-    def ban_users(self, request, queryset):
-        updated = queryset.update(user_stutas=2)
-        self.message_user(request, f'已成功封禁 {updated} 个用户')
-
-    ban_users.short_description = '封禁用户'
+    def become_active(self, request, queryset):
+        success_user = list()
+        for user in queryset:
+            for num in range(3):
+                active_code = str(user.id).replace("-", "")[num*3:num*3+6]
+                if not UserProfile.objects.filter(active_code=active_code).exists():
+                    user.is_active = True
+                    user.active_code = active_code
+                    # 创建代理钱包
+                    UserActiveWallet.objects.update_or_create(user=user)
+                    user.save()
+                    success_user.append(user.username)
+                    break
+        self.message_user(request, f'{", ".join(success_user)} 以上用户也被设置为代理 ')
+    become_active.short_description = "设置代理"
 
     def save_model(self, request, obj, form, change):
         if 'password' in form.changed_data and obj.password:
@@ -141,3 +151,30 @@ class StudyCommentGoodAdmin(admin.ModelAdmin):
     list_filter = ('is_del', 'create_at')
     search_fields = ('user__username', 'comment__id')
     ordering = ('-create_at',)
+
+
+@admin.register(UserActiveWallet)
+class UserActiveWalletAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'balance', 'freeze', 'create_at']
+    list_filter = ['create_at']
+    search_fields = ['user__username', 'user__email']  # 假设 UserProfile 有这些字段
+    readonly_fields = ['id', 'create_at']
+    ordering = ['-create_at']
+
+
+@admin.register(UserActiveAndUser)
+class UserActiveAndUserAdmin(admin.ModelAdmin):
+    list_display = ['id', 'active', 'client', 'create_at']
+    list_filter = ['create_at']
+    search_fields = ['active__username', 'client__username']  # 假设 UserProfile 有 username
+    readonly_fields = ['id', 'create_at']
+    ordering = ['-create_at']
+
+
+@admin.register(UserActiveWalletLog)
+class UserActiveWalletLogAdmin(admin.ModelAdmin):
+    list_display = ['id', 'relationship', 'amount', 'thaw_time', 'is_thaw', 'create_at']
+    list_filter = ['is_thaw', 'create_at', 'thaw_time']
+    search_fields = ['relationship__active__username', 'relationship__client__username']
+    readonly_fields = ['id', 'create_at']
+    ordering = ['-create_at']

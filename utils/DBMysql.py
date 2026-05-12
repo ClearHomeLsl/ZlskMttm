@@ -14,6 +14,9 @@ FLUSH PRIVILEGES;
 CREATE USER 'prod'@'%' IDENTIFIED WITH mysql_native_password BY 'WEIlsl0729.#';
 GRANT ALL PRIVILEGES ON *.* TO 'prod'@'%' WITH GRANT OPTION;
 
+CREATE DATABASE MttmData 
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
 """
 import environ
 
@@ -23,12 +26,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env.str('MYSQL_NAME', default='MttmData'),
-        'USER': env.str('MYSQL_USER', default='MttmUser'),
-        'PASSWORD': env.str('MYSQL_PASSWORD', default='Qiuqi001201.'),
+        'USER': env.str('MYSQL_USER', default='root'),
+        'PASSWORD': env.str('MYSQL_PASSWORD', default='qiuqi1201.'),
         'HOST': env.str('MYSQL_HOST', default='localhost'),
         'PORT': int(env.str('MYSQL_PORT', default='3306')),
         'CONN_MAX_AGE': 60 * 3,  # 连接最大存活时间(秒)
         'POOL_SIZE': 10,  # 连接池大小
     }
 }
+
 

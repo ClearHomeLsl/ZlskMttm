@@ -19,6 +19,7 @@ from django_ckeditor_5.forms import UploadFileForm
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from MttmView.settings import study_file_path, SalesContactInformationData
+from apps.users.utils import get_page_size
 
 
 
@@ -61,6 +62,7 @@ class UserLoginView(APIView):
             "user_stutas": user.user_stutas,
             "user_id": user.id,
             "is_first": user.is_first_pay,
+            "is_active": user.is_active,
         })
         return response
 
@@ -351,7 +353,7 @@ class StudyContentView(APIView):
 
             })
         # 获取当前还在审核中的文章
-        ing_data = StudyContent.objects.filter(status__in=[1,3], user=user)
+        ing_data = StudyContent.objects.filter(status__in=[1,2], user=user)
         for ing_d in ing_data:
             result.append({
                 "id": ing_d.id,
@@ -535,3 +537,54 @@ class SalesContactInformationView(APIView):
             "content" : SalesContactInformationData
         }
         return Response({"msg": "ok", "code": "0", "data": data})
+
+
+class ActingManageView(APIView):
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request):
+        auth_token = request.COOKIES.get('auth_token')
+        is_login, jg = login_verify(auth_token)
+        if is_login:
+            return jg
+        user = jg
+        if not user.is_active:
+            return Response({"msg": f"该用户无代理权限，无法获取代理数据。", "msg_code": "1001"})
+        active_wallet = UserActiveWallet.objects.get(user=user)
+
+        # 查询代理获利记录 获取分页参数
+        page = request.GET.get('page', 1)
+        page_size = request.GET.get('page_size', 20)  # 默认每页20条
+        model_obj = UserActiveWalletLog.objects.filter(relationship__active=user)
+        page, page_size, data, total_pages = get_page_size(page, page_size, model_obj)
+
+        user_wallet_detail = {
+            "active_code": user.active_code,
+            "balance": active_wallet.balance,
+            "freeze": active_wallet.freeze,
+        }
+        active_wallet_log = list()
+        for d in data:
+            active_wallet_log.append({
+                "amount": d.amount,
+                "thaw_time": d.thaw_time,
+                "is_thaw": d.is_thaw,
+                "client": d.relationship.client.username
+            })
+        pagination = {
+                "current_page": page,
+                "page_size": page_size,
+                "total_count": model_obj.count(),
+                "total_pages": total_pages,
+                "has_next": page < total_pages,
+                "has_previous": page > 1
+        }
+        response = Response({
+            "msg": "ok",
+            "code": "0",
+            "user_wallet_detail": user_wallet_detail,
+            "active_wallet_log": active_wallet_log,
+            "pagination": pagination,
+        })
+        return response

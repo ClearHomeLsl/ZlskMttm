@@ -17,4 +17,5 @@ urlpatterns = [
     path(r'api/agency_application/', views.AgencyApplicationView.as_view()),
     path(r'api/user_change_email/', views.UserChangeView.as_view()),
     path(r'api/sales_contact_information/', views.SalesContactInformationView.as_view()),
+    path(r'api/active/active_manage/', views.ActingManageView.as_view()),
 ]

@@ -74,6 +74,9 @@ class UserProfile(models.Model):
     user_stutas = models.IntegerField(verbose_name='用户状态', default=1, choices=USER_STUTAS)
     is_first_pay = models.BooleanField(verbose_name="是否已充值", default=True)
     is_delete = models.BooleanField(verbose_name="是否注销", default=False)
+    is_active = models.BooleanField(verbose_name="是否为代理", default=False)
+    active_code = models.CharField(verbose_name="代理代码", max_length=16, null=True)
+    active_level = models.IntegerField(verbose_name="代理等级", default=1, null=False, blank=False) # 1 为 30 2 为 50
     deleted_at = models.DateTimeField(verbose_name="注销时间", null=True, blank=True)
 
 
@@ -277,10 +280,37 @@ class AgencyApplication(models.Model):
 
 
 
-# class StudyOperDoc(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     user = models.ForeignKey(UserProfile, verbose_name='<UNK>', on_delete=models.CASCADE)
-#     content = model
+class UserActiveWallet(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    balance = models.DecimalField("账户余额", max_digits=10, decimal_places=2, default=0)
+    freeze = models.DecimalField("冻结余额", max_digits=10, decimal_places=2, default=0)
+    create_at = models.DateTimeField("创建时间", default=timezone.now, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "代理钱包余额"
+        verbose_name_plural = verbose_name
 
 
+class UserActiveAndUser(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    active = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='active_users')
+    client = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='client_users')
+    create_at = models.DateTimeField("创建时间", default=timezone.now, null=False, blank=False)
 
+    class Meta:
+        verbose_name = "代理用户关系表"
+        verbose_name_plural = verbose_name
+
+
+class UserActiveWalletLog(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    relationship = models.ForeignKey(UserActiveAndUser, on_delete=models.CASCADE)
+    amount = models.DecimalField("冻结金额",max_digits=10, decimal_places=2, default=0)
+    thaw_time = models.DateTimeField("解冻时间", null=False, blank=False)
+    is_thaw = models.BooleanField("是否解冻", default=False)
+    create_at = models.DateTimeField("创建时间", default=timezone.now, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "代理冻结金额记录"
+        verbose_name_plural = verbose_name
