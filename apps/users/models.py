@@ -314,3 +314,18 @@ class UserActiveWalletLog(models.Model):
     class Meta:
         verbose_name = "代理冻结金额记录"
         verbose_name_plural = verbose_name
+
+
+class UserWalletExtract(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    wallet = models.ForeignKey(UserActiveWallet, on_delete=models.CASCADE)
+    amount = models.DecimalField(verbose_name="提取金额", max_digits=10, decimal_places=2, default=0)
+    is_with = models.BooleanField(verbose_name="是否处理", default=False)
+    create_at = models.DateTimeField("创建时间", default=timezone.now, null=False, blank=False)
+    is_delete = models.BooleanField(verbose_name="是否取消", default=False)
+    delete_time = models.DateTimeField(verbose_name="取消时间", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "代理提取纪录"
+        verbose_name_plural = verbose_name
+

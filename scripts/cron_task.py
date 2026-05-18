@@ -15,6 +15,7 @@ from utils.DBRedis import get_redis_connect
 from utils.game_settlement import end_game
 from utils.save_price import SavePrice
 from utils.get_news import get_jin_new
+from utils.sar_detection import sar_detection_and_send_email
 import logging
 
 # 在创建调度器之前或之后添加
@@ -118,6 +119,17 @@ async def main():
         id='save_price',
         name='保存历史价格',
         args=[r]
+    )
+
+    # 全时段趋势检测
+    scheduler.add_job(
+        func=sar_detection_and_send_email,
+        trigger='interval',
+        seconds=3,
+        id='sar_all_time_detection',
+        name='td',
+        args=[r],
+        max_instances=1
     )
 
     # 打印任务信息

@@ -1,3 +1,4 @@
+import decimal
 from urllib import request
 
 from django.shortcuts import render
@@ -119,6 +120,7 @@ class UserRegisterView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
         verify_code = request.data.get('verify_code')
+        active_code = request.data.get('active_code')
         if not (mobile and username and password):
             return Response({"msg": "缺少指定参数", "code": "1002", "response_type": "error"})
         # 验证验证码是否正确
@@ -152,6 +154,13 @@ class UserRegisterView(APIView):
             new_point=1000,
             change_oper=4
         )
+        # 创建邀请关系
+        if active_code:
+            active_user = UserProfile.objects.get(active_code=active_code)
+            UserActiveAndUser.objects.create(
+                active=active_user,
+                client=user
+            )
         # 创建用户后整理登陆信息，实现自动登陆
         r = get_redis_connect()
         cookie = str(uuid.uuid4()) + "_" + str(user.id) + "_" + user.mobile
@@ -568,7 +577,7 @@ class ActingManageView(APIView):
         for d in data:
             active_wallet_log.append({
                 "amount": d.amount,
-                "thaw_time": d.thaw_time,
+                "thaw_time": d.thaw_time.strftime("%Y-%m-%d %H:%M:%S"),
                 "is_thaw": d.is_thaw,
                 "client": d.relationship.client.username
             })
@@ -580,11 +589,65 @@ class ActingManageView(APIView):
                 "has_next": page < total_pages,
                 "has_previous": page > 1
         }
+        # 提取记录
+        extracts = UserWalletExtract.objects.filter(wallet__user=user)
+        extract_log = list()
+        for extract in extracts:
+            extract_log.append({
+                "id" : extract.id,
+                "amount": extract.amount,
+                "is_with": extract.is_with,
+                "create_at": extract.create_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "is_delete": extract.is_delete,
+            })
         response = Response({
             "msg": "ok",
             "code": "0",
             "user_wallet_detail": user_wallet_detail,
             "active_wallet_log": active_wallet_log,
             "pagination": pagination,
+            "extract_log":extract_log
         })
         return response
+
+
+    def post(self, request):
+        # 请求提取提成
+        auth_token = request.COOKIES.get('auth_token')
+        is_login, jg = login_verify(auth_token)
+        if is_login:
+            return jg
+        user = jg
+        if not user.is_active:
+            return Response({"msg": f"该用户无代理权限，无法获取代理数据。", "msg_code": "1001"})
+        active_wallet = UserActiveWallet.objects.get(user=user)
+        amount = request.data.get('amount')
+        amount = Decimal(amount)
+        if active_wallet.balance < amount:
+            return Response({"msg": f"代理钱包余额不足...", "msg_code": "1001"})
+        if UserWalletExtract.objects.filter(wallet=active_wallet, is_with=False, is_delete=False).exists():
+            return Response({"msg": f"当前存在未处理的提取，处理后可重新提取!", "msg_code": "1001"})
+        active_wallet.balance -= amount
+        UserWalletExtract.objects.create(
+            wallet=active_wallet,
+            amount=amount,
+        )
+        active_wallet.save()
+        return Response({"msg": "ok", "code": "0"})
+
+
+    def delete(self, request):
+        # 请求提取提成
+        auth_token = request.COOKIES.get('auth_token')
+        is_login, jg = login_verify(auth_token)
+        if is_login:
+            return jg
+        user = jg
+        if not user.is_active:
+            return Response({"msg": f"该用户无代理权限，无法获取代理数据。", "msg_code": "1001"})
+        extract_id = request.data.get('extract_id')
+        extract = UserWalletExtract.objects.get(id=extract_id)
+        extract.is_delete = True
+        extract.delete_time = datetime.now()
+        extract.save()
+        return Response({"msg": "ok", "code": "0"})

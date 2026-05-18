@@ -178,3 +178,8 @@ class UserActiveWalletLogAdmin(admin.ModelAdmin):
     search_fields = ['relationship__active__username', 'relationship__client__username']
     readonly_fields = ['id', 'create_at']
     ordering = ['-create_at']
+
+
+@admin.register(UserWalletExtract)
+class UserActiveWalletLogAdmin(admin.ModelAdmin):
+    list_display = ['id', 'wallet__user__username', 'amount', 'is_with','create_at']

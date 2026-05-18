@@ -214,3 +214,9 @@ CHANNEL_LAYERS = {
 
 
 SalesContactInformationData = """QQ: 3297026261"""
+
+
+smtp_server = "smtp.126.com"
+smtp_port = 465  # SSL 加密端口
+sender_email = "zlsk888@126.com"  # 你的126邮箱地址
+auth_code = "TCeTdL5kGrLenxpC"  # 上面获取的16位授权码
