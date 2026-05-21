@@ -15,8 +15,7 @@ def send_email(email, content_type):
 
 本信息仅作趋势状态同步，不构成任何交易建议。
 
-[您的公司名称]
-2026年5月15日
+[四川智链数科科技有限公司]
     """
 
     msg = MIMEText(content, 'plain', 'utf-8')
